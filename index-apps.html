@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Applications Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 90%;
+        }
+
+        .app-link {
+            display: block;
+            padding: 20px;
+            margin: 12px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-align: center;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .app-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .app-link.secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .app-link.secondary:hover {
+            box-shadow: 0 8px 20px rgba(240, 147, 251, 0.4);
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #1a202c;
+        }
+
+        p {
+            color: #718096;
+            margin-bottom: 24px;
+        }
+
+        .feature-list {
+            background: #f7fafc;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+
+        .feature-list li {
+            color: #4a5568;
+            margin: 8px 0;
+            padding-left: 24px;
+            position: relative;
+        }
+
+        .feature-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #48bb78;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🤖 AI Applications</h1>
+        <p>Choose an application to get started</p>
+
+        <a href="chat-app.html" class="app-link">
+            💬 AI Chat App (NEW)
+        </a>
+        <div class="feature-list">
+            <ul style="list-style: none; padding: 0; margin: 0;">
+                <li>Puter.js v2 Integration</li>
+                <li>Multiple AI Providers</li>
+                <li>Smart Settings Management</li>
+                <li>Clean, Modern Interface</li>
+            </ul>
+        </div>
+
+        <a href="index.html" class="app-link secondary">
+            🎭 VelvetCore Roleplay
+        </a>
+        <div class="feature-list">
+            <ul style="list-style: none; padding: 0; margin: 0;">
+                <li>Advanced Character System</li>
+                <li>Lorebook Management</li>
+                <li>Multi-Swipe Responses</li>
+                <li>Context Summarization</li>
+            </ul>
+        </div>
+
+        <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid #e2e8f0; text-align: center;">
+            <p style="font-size: 14px; margin: 0;">
+                📚 Check <strong>CHAT_APP_GUIDE.md</strong> for detailed instructions
+            </p>
+        </div>
+    </div>
+</body>
+</html>

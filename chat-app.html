@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat - Powered by Puter.js</title>
+    <script src="https://js.puter.com/v2/"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 320px;
+            background: #1e293b;
+            border-right: 1px solid #334155;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .main-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .message {
+            display: flex;
+            gap: 12px;
+            max-width: 80%;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message.assistant {
+            align-self: flex-start;
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .message.user .message-avatar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .message.assistant .message-avatar {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .message-content {
+            background: #334155;
+            padding: 12px 16px;
+            border-radius: 12px;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        .message.user .message-content {
+            background: #4f46e5;
+        }
+
+        .input-area {
+            padding: 20px;
+            background: #1e293b;
+            border-top: 1px solid #334155;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .input-wrapper textarea {
+            flex: 1;
+            background: #0f172a;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            padding: 12px;
+            color: #e2e8f0;
+            resize: none;
+            font-family: inherit;
+            font-size: 14px;
+            min-height: 44px;
+            max-height: 120px;
+        }
+
+        .input-wrapper textarea:focus {
+            outline: none;
+            border-color: #4f46e5;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: #4f46e5;
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #4338ca;
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #475569;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #64748b;
+        }
+
+        .settings-section {
+            padding: 20px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .settings-section h3 {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #94a3b8;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #cbd5e1;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: #e2e8f0;
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #4f46e5;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: #065f46;
+            border: 1px solid #059669;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .loading-dots {
+            display: inline-flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .loading-dots span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #94a3b8;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .loading-dots span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .loading-dots span:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes bounce {
+            0%, 80%, 100% {
+                transform: scale(0);
+            }
+            40% {
+                transform: scale(1);
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+
+        .header {
+            padding: 20px;
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .model-list {
+            max-height: 200px;
+            overflow-y: auto;
+            background: #0f172a;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            margin-top: 8px;
+        }
+
+        .model-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #334155;
+            transition: background 0.15s;
+        }
+
+        .model-item:hover {
+            background: #1e293b;
+        }
+
+        .model-item:last-child {
+            border-bottom: none;
+        }
+
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="settings-section">
+                <h3>AI Provider</h3>
+                <div class="form-group">
+                    <label>Select Provider</label>
+                    <select id="providerSelect">
+                        <option value="puter">Puter</option>
+                        <option value="openai">OpenAI</option>
+                        <option value="anthropic">Anthropic</option>
+                        <option value="custom">Custom API</option>
+                    </select>
+                </div>
+
+                <div id="puterStatus" class="hidden">
+                    <span class="status-badge">
+                        <span class="status-dot"></span>
+                        <span id="puterUsername">Connected</span>
+                    </span>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3>Model Configuration</h3>
+                <div class="form-group">
+                    <label>Model ID</label>
+                    <input type="text" id="modelInput" placeholder="e.g., gpt-4o, claude-3.5-sonnet">
+                </div>
+
+                <button class="btn btn-secondary" id="fetchModelsBtn" style="width: 100%;">
+                    Fetch Available Models
+                </button>
+
+                <div id="modelsList" class="model-list hidden"></div>
+            </div>
+
+            <div class="settings-section">
+                <h3>Generation Parameters</h3>
+
+                <div class="form-group">
+                    <label>Temperature: <span id="tempValue">0.7</span></label>
+                    <input type="range" id="temperature" min="0" max="2" step="0.1" value="0.7" style="width: 100%;">
+                </div>
+
+                <div class="form-group">
+                    <label>Max Tokens: <span id="maxTokensValue">2048</span></label>
+                    <input type="range" id="maxTokens" min="100" max="4096" step="100" value="2048" style="width: 100%;">
+                </div>
+
+                <div class="form-group" id="topPGroup">
+                    <label>Top P: <span id="topPValue">0.9</span></label>
+                    <input type="range" id="topP" min="0" max="1" step="0.1" value="0.9" style="width: 100%;">
+                </div>
+
+                <div class="form-group" id="topKGroup">
+                    <label>Top K: <span id="topKValue">40</span></label>
+                    <input type="range" id="topK" min="0" max="100" step="5" value="40" style="width: 100%;">
+                </div>
+
+                <div class="form-group" id="promptTemplateGroup">
+                    <label>Prompt Template</label>
+                    <select id="promptTemplate">
+                        <option value="chatml">ChatML</option>
+                        <option value="alpaca">Alpaca</option>
+                        <option value="vicuna">Vicuna</option>
+                        <option value="llama3">Llama 3</option>
+                        <option value="mistral">Mistral</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <button class="btn btn-secondary" id="clearChatBtn" style="width: 100%;">
+                    Clear Chat History
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Chat Area -->
+        <div class="main-area">
+            <div class="header">
+                <h1>AI Chat Assistant</h1>
+            </div>
+
+            <div class="chat-container" id="chatContainer">
+                <div class="message assistant">
+                    <div class="message-avatar">AI</div>
+                    <div class="message-content">
+                        Hello! I'm your AI assistant. How can I help you today?
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-area">
+                <div class="input-wrapper">
+                    <textarea
+                        id="messageInput"
+                        placeholder="Type your message here..."
+                        rows="1"
+                    ></textarea>
+                    <button class="btn btn-primary" id="sendBtn">
+                        Send
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="chat-app.js"></script>
+</body>
+</html>
